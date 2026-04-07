@@ -1,0 +1,13 @@
+{
+  "author": "Deaquay",
+  "title": "Qwen3.5-Uncensored GGUF",
+  "reference": "https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF",
+  "files": [
+    "https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF"
+  ],
+  "install_type": "git-clone",
+  "description": "GGUF-only build of Qwen3.5-Uncensored for ComfyUI. Uses llama-cpp-python instead of transformers — no transformers dependency, compatible with older ComfyUI nodes.",
+  "category": "image",
+  "tags": ["vision", "language", "multimodal", "qwen", "gguf", "llama-cpp", "wan2.2", "video", "i2v", "t2v", "abliterated", "nsfw"],
+  "version": "1.0.0"
+}
