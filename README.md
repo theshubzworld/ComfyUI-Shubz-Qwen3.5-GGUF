@@ -56,7 +56,9 @@ pip install -r requirements.txt
 
 You **must** install from [JamePeng's fork](https://github.com/JamePeng/llama-cpp-python/releases/), not pip.
 
-Pick the wheel matching your CUDA + Python version. Example for Python 3.13 + CUDA 13.0 on Linux:
+Pick the wheel matching your CUDA + Python version. 
+
+Example for Python 3.13 + CUDA 13.0 on Linux:
 
 ```bash
 pip install https://github.com/JamePeng/llama-cpp-python/releases/download/v0.3.34-cu130-Basic-linux-20260331/llama_cpp_python-0.3.34+cu130.basic-cp313-cp313-linux_x86_64.whl
@@ -64,16 +66,18 @@ pip install https://github.com/JamePeng/llama-cpp-python/releases/download/v0.3.
 
 Available for CUDA 12.4, 12.6, 12.8, 13.0 and Python 3.10–3.14.
 
-For Windows users, use:
+For Windows users with Python 3.13 + CUDA 13.0, use:
 
 ```
 pip install https://github.com/JamePeng/llama-cpp-python/releases/download/v0.3.34-cu130-Basic-win-20260331/llama_cpp_python-0.3.34+cu130.basic-cp313-cp313-win_amd64.whl
 ```
 
+But better look into the releases of the JamePeng repo for your version.
+
 ### Adding models
 
 - Drop GGUF files into `models/LLM/GGUF/` — they'll be auto-detected
-- For VL models, put the mmproj file in the same directory as the model file
+- **For VL models, put the mmproj file in the same directory as the model file**
 - Or add entries to `gguf_models.json` for auto-download from HuggingFace
 
 ### What's NOT included (compared to the full version)
