@@ -12,10 +12,49 @@
 import importlib.util
 import os
 import sys
+import ctypes
 
 # Get the directory of the current script
 current_dir = os.path.dirname(__file__)
 sys.path.insert(0, current_dir)
+
+# Workaround for Windows DLL load entry point conflict between PyTorch and llama-cpp-python OpenMP runtimes
+if sys.platform == "win32":
+    try:
+        import site
+        libomp_loaded = False
+        # Search in site-packages and python directories
+        search_dirs = []
+        try:
+            search_dirs.extend(site.getsitepackages())
+        except AttributeError:
+            pass
+        search_dirs.append(os.path.dirname(sys.executable))
+        
+        for site_dir in search_dirs:
+            potential_paths = [
+                os.path.join(site_dir, "Lib", "site-packages", "llama_cpp", "lib", "libomp140.x86_64.dll"),
+                os.path.join(site_dir, "llama_cpp", "lib", "libomp140.x86_64.dll")
+            ]
+            for potential_path in potential_paths:
+                if os.path.exists(potential_path):
+                    ctypes.CDLL(potential_path)
+                    libomp_loaded = True
+                    print(f"[Shubz Qwen3.5 GGUF Workaround] Pre-loaded libomp DLL from: {potential_path}")
+                    break
+            if libomp_loaded:
+                break
+        
+        # Fallback to sys.path search if not loaded
+        if not libomp_loaded:
+            for path_entry in sys.path:
+                potential_path = os.path.join(path_entry, "llama_cpp", "lib", "libomp140.x86_64.dll")
+                if os.path.exists(potential_path):
+                    ctypes.CDLL(potential_path)
+                    print(f"[Shubz Qwen3.5 GGUF Workaround] Pre-loaded libomp DLL from sys.path: {potential_path}")
+                    break
+    except Exception as e:
+        print(f"[Shubz Qwen3.5 GGUF Workaround] Warning: Failed to pre-load libomp DLL: {e}")
 
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
