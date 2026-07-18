@@ -24,25 +24,25 @@ from huggingface_hub import hf_hub_download, snapshot_download
 from llama_cpp import Llama
 
 import folder_paths
-from AILab_OutputCleaner import OutputCleanConfig, clean_model_output
+from Shubz_OutputCleaner import OutputCleanConfig, clean_model_output
 
 # Import cache functions from shared module (no transformers dependency)
 import sys
 sys.path.append(str(Path(__file__).parent))
-from AILab_shared import PROMPT_CACHE, get_cache_key, get_alternative_cache_key, save_prompt_cache
-from AILab_QwenVL_GGUF import read_gguf_architecture
+from Shubz_shared import PROMPT_CACHE, get_cache_key, get_alternative_cache_key, save_prompt_cache
+from Shubz_QwenVL_GGUF import read_gguf_architecture
 
 # Simple global variable to store last generated prompt
 LAST_SAVED_PROMPT = None
 
 NODE_DIR = Path(__file__).parent
 GGUF_CONFIG_PATH = NODE_DIR / "gguf_models.json"
-PROMPT_CONFIG_PATH = NODE_DIR / "AILab_System_Prompts.json"
+PROMPT_CONFIG_PATH = NODE_DIR / "Shubz_System_Prompts.json"
 
 
 def load_prompt_config():
     if not PROMPT_CONFIG_PATH.exists():
-        raise FileNotFoundError(f"[QwenVL] Missing AILab_System_Prompts.json at {PROMPT_CONFIG_PATH}")
+        raise FileNotFoundError(f"[Shubz QwenVL] Missing Shubz_System_Prompts.json at {PROMPT_CONFIG_PATH}")
     try:
         with open(PROMPT_CONFIG_PATH, "r", encoding="utf-8") as fh:
             data = json.load(fh) or {}
@@ -50,10 +50,10 @@ def load_prompt_config():
         styles = qwen_text.get("styles")
         translation_prompt = qwen_text.get("translation_prompt")
         if not styles or not translation_prompt:
-            raise ValueError("AILab_System_Prompts.json must include qwen_text.styles and qwen_text.translation_prompt")
+            raise ValueError("Shubz_System_Prompts.json must include qwen_text.styles and qwen_text.translation_prompt")
         return {"styles": styles, "translation_prompt": translation_prompt}
     except Exception as exc:
-        raise RuntimeError(f"[QwenVL] Failed to load AILab_System_Prompts.json: {exc}") from exc
+        raise RuntimeError(f"[Shubz QwenVL] Failed to load Shubz_System_Prompts.json: {exc}") from exc
 
 
 PROMPT_CONFIG = load_prompt_config()
@@ -88,11 +88,11 @@ def _model_name_to_filename_candidates(model_name: str) -> set[str]:
     return candidates
 
 
-class AILab_QwenVL_GGUF_PromptEnhancer:
+class Shubz_QwenVL_GGUF_PromptEnhancer:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("ENHANCED_OUTPUT",)
     FUNCTION = "process"
-    CATEGORY = "Qwen3.5-Uncensored"
+    CATEGORY = "🤖 Shubz Qwen3.5-Uncensored"
 
     def __init__(self):
         self.llm = None
@@ -128,7 +128,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         except PermissionError:
             pass
         if local_models:
-            print(f"[QwenVL] Discovered {len(local_models)} local GGUF text model(s) on disk")
+            print(f"[Shubz QwenVL] Discovered {len(local_models)} local GGUF text model(s) on disk")
         return local_models
 
     @staticmethod
@@ -143,7 +143,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
                 with open(GGUF_CONFIG_PATH, "r", encoding="utf-8") as fh:
                     data = json.load(fh) or {}
             except Exception as exc:
-                print(f"[QwenVL] gguf_models.json load failed: {exc}")
+                print(f"[Shubz QwenVL] gguf_models.json load failed: {exc}")
 
         base_dir = data.get("base_dir") or fallback["base_dir"]
 
@@ -203,7 +203,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         except Exception:
             pass
         for scan_dir in scan_dirs:
-            local_models = AILab_QwenVL_GGUF_PromptEnhancer._scan_local_gguf_text_models(scan_dir, existing_filenames)
+            local_models = Shubz_QwenVL_GGUF_PromptEnhancer._scan_local_gguf_text_models(scan_dir, existing_filenames)
             models.update(local_models)
             existing_filenames.update(Path(e.get("filename", "")).name for e in local_models.values() if e.get("filename"))
 
@@ -211,9 +211,9 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
 
     @classmethod
     def INPUT_TYPES(cls):
-        styles = list(STYLES.keys())
+        styles = ["None"] + list(STYLES.keys())
         preferred_style = "📝 Enhance"
-        default_style = preferred_style if preferred_style in styles else (styles[0] if styles else "📝 Enhance")
+        default_style = preferred_style if preferred_style in styles else (styles[0] if styles else "None")
         temp = cls.load_gguf_models()
         model_keys = sorted(list((temp.get("models") or {}).keys())) or ["(no GGUF models found)"]
         default_model = model_keys[0]
@@ -309,7 +309,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         models = self.gguf_models.get("models") or {}
         entry = models.get(model_name) or {}
         if entry.get("is_local"):
-            raise FileNotFoundError(f"[QwenVL] Local GGUF model not found: {resolved}")
+            raise FileNotFoundError(f"[Shubz QwenVL] Local GGUF model not found: {resolved}")
         if not entry:
             wanted = _model_name_to_filename_candidates(model_name)
             for candidate in models.values():
@@ -321,13 +321,13 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         repo_ids = [rid for rid in (entry.get("alt_repo_ids") or []) + [entry.get("repo_id")] if rid]
         filename = entry.get("filename") or resolved.name
         if not repo_ids or not filename:
-            raise FileNotFoundError(f"[QwenVL] GGUF missing and no repo_id/filename to download: {resolved}")
+            raise FileNotFoundError(f"[Shubz QwenVL] GGUF missing and no repo_id/filename to download: {resolved}")
         target_dir = resolved.parent
         target_dir.mkdir(parents=True, exist_ok=True)
         attempted = []
         for repo_id in repo_ids:
             attempted.append(repo_id)
-            print(f"[QwenVL] Downloading GGUF {filename} from {repo_id}")
+            print(f"[Shubz QwenVL] Downloading GGUF {filename} from {repo_id}")
             try:
                 downloaded = hf_hub_download(
                     repo_id=repo_id,
@@ -340,7 +340,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
                     resolved.parent.mkdir(parents=True, exist_ok=True)
                     downloaded_path.replace(resolved)
             except Exception as exc:
-                print(f"[QwenVL] hf_hub_download failed from {repo_id}: {exc}")
+                print(f"[Shubz QwenVL] hf_hub_download failed from {repo_id}: {exc}")
             if resolved.exists():
                 break
             try:
@@ -351,7 +351,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
                     allow_patterns=[filename, f"**/{filename}"],
                 )
             except Exception as exc:
-                print(f"[QwenVL] Filtered snapshot failed from {repo_id}: {exc}")
+                print(f"[Shubz QwenVL] Filtered snapshot failed from {repo_id}: {exc}")
             if resolved.exists():
                 break
             found = list(target_dir.rglob(filename))
@@ -360,7 +360,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
                 found[0].replace(resolved)
                 break
         if not resolved.exists():
-            raise FileNotFoundError(f"[QwenVL] GGUF model not found after download: {resolved} (tried: {', '.join(attempted)})")
+            raise FileNotFoundError(f"[Shubz QwenVL] GGUF model not found after download: {resolved} (tried: {', '.join(attempted)})")
 
     def _load_model(self, model_name, device):
         resolved = self._resolve_model_path(model_name)
@@ -381,8 +381,8 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
             time.sleep(0.1)  # Brief pause for cleanup to complete
         resolved.parent.mkdir(parents=True, exist_ok=True)
         if not resolved.exists():
-            raise FileNotFoundError(f"[QwenVL] GGUF model not found: {resolved}")
-        print(f"[QwenVL] Loading GGUF model from {resolved}")
+            raise FileNotFoundError(f"[Shubz QwenVL] GGUF model not found: {resolved}")
+        print(f"[Shubz QwenVL] Loading GGUF model from {resolved}")
         if device == "auto":
             device_choice = "cuda" if torch.cuda.is_available() else ("mps" if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available() else "cpu")
         else:
@@ -406,7 +406,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         is_qwen35 = arch in ("qwen35", "qwen35moe") if arch else "qwen3.5-" in model_name.lower()
         if is_qwen35:
             kwargs["chat_template_kwargs"] = {"enable_thinking": False}
-            print(f"[QwenVL] Qwen3.5 detected (arch={arch}): Disabling thinking in chat template.")
+            print(f"[Shubz QwenVL] Qwen3.5 detected (arch={arch}): Disabling thinking in chat template.")
 
         self.llm = Llama(**kwargs)
         self.current_signature = signature
@@ -433,11 +433,12 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
             )
 
         def _call(system: str, user: str, temp: float, seed_val: int) -> str:
+            messages = []
+            if system:
+                messages.append({"role": "system", "content": system})
+            messages.append({"role": "user", "content": user})
             response = self.llm.create_chat_completion(
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
+                messages=messages,
                 max_tokens=max_tokens,
                 temperature=temp,
                 top_p=top_p,
@@ -445,7 +446,7 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
                 seed=seed_val,
             )
             if not response or "choices" not in response or not response["choices"]:
-                raise RuntimeError("[QwenVL] llama_cpp returned empty response")
+                raise RuntimeError("[Shubz QwenVL] llama_cpp returned empty response")
             return (response["choices"][0].get("message", {}).get("content", "") or "").strip()
 
         raw = _call(system_prompt, user_prompt, float(temperature), int(seed))
@@ -491,16 +492,16 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         
         # Simple keep last prompt logic
         if keep_last_prompt:  # Keep last prompt enabled
-            print(f"[QwenVL PromptEnhancer GGUF] Keep last prompt enabled - using last saved prompt")
+            print(f"[Shubz QwenVL PromptEnhancer GGUF] Keep last prompt enabled - using last saved prompt")
             if LAST_SAVED_PROMPT:
-                print(f"[QwenVL PromptEnhancer GGUF] Using last prompt: {LAST_SAVED_PROMPT[:50]}...")
+                print(f"[Shubz QwenVL PromptEnhancer GGUF] Using last prompt: {LAST_SAVED_PROMPT[:50]}...")
                 return (LAST_SAVED_PROMPT,)
             else:
-                print(f"[QwenVL PromptEnhancer GGUF] No previous prompt found, returning empty")
+                print(f"[Shubz QwenVL PromptEnhancer GGUF] No previous prompt found, returning empty")
                 return ("",)
         
         # Always generate when keep last prompt is disabled
-        print(f"[QwenVL PromptEnhancer GGUF] Keep last prompt disabled - generating new prompt")
+        print(f"[Shubz QwenVL PromptEnhancer GGUF] Keep last prompt disabled - generating new prompt")
         
         # Generate cache key with all inputs including seed
         cache_key = get_cache_key(model_name, preset_system_prompt, prompt_text, seed=seed)
@@ -509,18 +510,21 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         if cache_key in PROMPT_CACHE:
             cached_text = PROMPT_CACHE[cache_key].get("text", "")
             if cached_text:
-                print(f"[QwenVL PromptEnhancer GGUF] Using cached prompt for seed {seed}: {cache_key[:8]}...")
+                print(f"[Shubz QwenVL PromptEnhancer GGUF] Using cached prompt for seed {seed}: {cache_key[:8]}...")
                 return (cached_text.strip(),)
         
-        style_entry = self.styles.get(preset_system_prompt, {})
-        system_prompt = (custom_system_prompt.strip() or style_entry.get("system_prompt") or "").strip()
-        if not system_prompt:
-            raise ValueError("system_prompt is empty; check AILab_System_Prompts.json or preset selection.")
-        system_prompt = (
-            f"{system_prompt}\n\n"
-            "Return only the final prompt text. No preface, no explanations, no analysis, no JSON, no markdown fences, and no </think>.\n"
-            "Do not write planning steps (no 'First', 'Next', 'Then') and do not use first-person ('I', 'we')."
-        )
+        if preset_system_prompt == "None":
+            system_prompt = custom_system_prompt.strip()
+        else:
+            style_entry = self.styles.get(preset_system_prompt, {})
+            system_prompt = (custom_system_prompt.strip() or style_entry.get("system_prompt") or "").strip()
+            if not system_prompt:
+                raise ValueError("system_prompt is empty; check Shubz_System_Prompts.json or preset selection.")
+            system_prompt = (
+                f"{system_prompt}\n\n"
+                "Return only the final prompt text. No preface, no explanations, no analysis, no JSON, no markdown fences, and no </think>.\n"
+                "Do not write planning steps (no 'First', 'Next', 'Then') and do not use first-person ('I', 'we')."
+            )
         user_prompt = prompt_text.strip() or "Describe a scene vividly."
         merged_prompt = user_prompt
         self._load_model(model_name, device)
@@ -563,18 +567,18 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
         }
         save_prompt_cache()  # Save cache to file
         
-        print(f"[QwenVL PromptEnhancer GGUF] Cached new prompt for seed {seed}: {cache_key[:8]}...")
+        print(f"[Shubz QwenVL PromptEnhancer GGUF] Cached new prompt for seed {seed}: {cache_key[:8]}...")
         
         try:
             # Save the generated prompt for future bypass mode
             LAST_SAVED_PROMPT = final
-            print(f"[QwenVL PromptEnhancer GGUF] Saved prompt for bypass mode: {final[:50]}...")
+            print(f"[Shubz QwenVL PromptEnhancer GGUF] Saved prompt for bypass mode: {final[:50]}...")
             
             return (final,)
         finally:
             if not keep_model_loaded:
                 self.clear()
-                print(f"[QwenVL PromptEnhancer GGUF] keep_model_loaded=False - cleaning up model...")
+                print(f"[Shubz QwenVL PromptEnhancer GGUF] keep_model_loaded=False - cleaning up model...")
 
     @staticmethod
     def _is_english(text):
@@ -588,9 +592,9 @@ class AILab_QwenVL_GGUF_PromptEnhancer:
 
 
 NODE_CLASS_MAPPINGS = {
-    "AILab_QwenVL_GGUF_PromptEnhancer": AILab_QwenVL_GGUF_PromptEnhancer,
+    "Shubz_QwenVL_GGUF_PromptEnhancer": Shubz_QwenVL_GGUF_PromptEnhancer,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AILab_QwenVL_GGUF_PromptEnhancer": "Qwen3.5-Uncensored Prompt Enhancer (GGUF)",
+    "Shubz_QwenVL_GGUF_PromptEnhancer": "✍️ Shubz Qwen3.5-Uncensored Prompt Enhancer (GGUF)",
 }

@@ -1,15 +1,15 @@
 [project]
-name = "ComfyUI-Qwen3.5-Uncensored-GGUF"
+name = "ComfyUI-Shubz-Qwen3.5-GGUF"
 description = "GGUF-only build of Qwen3.5-Uncensored for ComfyUI. Uses llama-cpp-python instead of transformers — no transformers dependency, compatible with older ComfyUI nodes."
 version = "1.0.0"
 license = {file = "LICENSE"}
 dependencies = ["torch", "huggingface-hub", "hf_xet", "numpy", "Pillow", "llama-cpp-python"]
 
 [project.urls]
-Repository = "https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF"
+Repository = "https://github.com/theshubzworld/ComfyUI-Shubz-Qwen3.5-GGUF"
 
 [tool.comfy]
-PublisherId = "Deaquay"
-DisplayName = "ComfyUI-Qwen3.5-Uncensored-GGUF"
+PublisherId = "theshubzworld"
+DisplayName = "ComfyUI-Shubz-Qwen3.5-GGUF"
 Icon = ""
 Category = "video"

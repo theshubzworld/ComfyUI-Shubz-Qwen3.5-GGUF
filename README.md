@@ -45,9 +45,9 @@ You don't need to edit JSON config files. The nodes automatically scan your loca
 ```bash
 cd ComfyUI/custom_nodes/
 
-git clone https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF.git
+git clone https://github.com/theshubzworld/ComfyUI-Shubz-Qwen3.5-GGUF.git
 
-cd ComfyUI-Qwen3.5-Uncensored-GGUF
+cd ComfyUI-Shubz-Qwen3.5-GGUF
 
 pip install -r requirements.txt
 ```

@@ -35,7 +35,7 @@ class VRAMCleanup:
     RETURN_TYPES = ("*",)  # Pass through the input
     RETURN_NAMES = ("output",)
     FUNCTION = "cleanup_vram_memory"
-    CATEGORY = "🔷 QwenVL-Mod/Utils"
+    CATEGORY = "🤖 Shubz Qwen3.5-Uncensored/Utils"
     OUTPUT_NODE = True
     
     def cleanup_vram_memory(self, input, cleanup_mode):
@@ -162,7 +162,7 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "VRAMCleanup": "VRAM Cleanup"
+    "VRAMCleanup": "🧹 VRAM Cleanup"
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']

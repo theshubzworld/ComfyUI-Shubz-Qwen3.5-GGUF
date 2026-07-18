@@ -138,8 +138,8 @@ This major update resolves critical workflow issues with T2V/I2V batch processin
 
 ### 📋 Files Modified
 **Node Files:**
-|- `AILab_QwenVL_GGUF.py`: Batch processing + enhanced cleanup
-|- `AILab_QwenVL_GGUF_PromptEnhancer.py`: keep_model_loaded + cleanup
+|- `Shubz_QwenVL_GGUF.py`: Batch processing + enhanced cleanup
+|- `Shubz_QwenVL_GGUF_PromptEnhancer.py`: keep_model_loaded + cleanup
 
 **Docker System Files:**
 |- `runpod/Dockerfile`: Flash Attention 2 + optimized ComfyUI arguments
@@ -182,8 +182,8 @@ This critical update resolves a major VRAM leak issue in GGUF nodes that was cau
 - **Build Warnings**: Removed problematic HF_TOKEN variables
 
 ### 📋 Files Modified
-- `AILab_QwenVL_GGUF.py`: Enhanced VRAM cleanup
-- `AILab_QwenVL_GGUF_PromptEnhancer.py`: Enhanced VRAM cleanup
+- `Shubz_QwenVL_GGUF.py`: Enhanced VRAM cleanup
+- `Shubz_QwenVL_GGUF_PromptEnhancer.py`: Enhanced VRAM cleanup
 - `runpod/Dockerfile`: RunPod methods + optimizations
 - `runpod/Dockerfile.4090`: RunPod methods + optimizations
 
@@ -238,7 +238,7 @@ This major update introduces a complete story generation system for WAN 2.2, ena
   - `/vastai/workflows/WAN2.2-I2V-AutoPrompt-Story.json` ready-to-use I2V workflow
   - `/vastai/workflows/WAN2.2-T2V-AutoPrompt-Story.json` ready-to-use T2V workflow
 - **Docker**: Updated `/runpod/Dockerfile` with Story workflows
-- **Prompts**: Enhanced `/AILab_System_Prompts.json` with Story system
+- **Prompts**: Enhanced `/Shubz_System_Prompts.json` with Story system
 
 ### 🔧 Technical Improvements
 - **Auto-Loading**: Enhanced `__init__.py` to load nodes from subdirectory
@@ -284,7 +284,7 @@ This update refines the prompt persistence feature with a more intuitive paramet
 
 ### 📦 Enhanced Model Selection (HF)
 - **Added Josiefied Model**: Josiefied-Qwen3-VL-4B-Instruct-abliterated-beta-v1 (HF only)
-- **GGUF Not Available**: Josiefied model exists only in HuggingFace format, not GGUF
+- **GGUF Not Avshubzle**: Josiefied model exists only in HuggingFace format, not GGUF
 - **Better Alternatives**: mradermacher models provide superior GGUF quantizations
 - **Reliable Behavior**: Works regardless of seed changes or model variations
 
@@ -316,7 +316,7 @@ This major feature introduces a new `bypass_mode` parameter that allows users to
 - **Smart Cache Retrieval**: When `bypass_mode=True`, nodes automatically retrieve the most recent cached prompt for the current model
 - **Zero Resource Usage**: Bypass mode consumes no computational resources - instant response
 - **Perfect Workflow Control**: Generate prompts once, then enable bypass mode to preserve them while changing inputs
-- **Universal Implementation**: Available across all nodes (HF, GGUF, PromptEnhancer, Advanced variants)
+- **Universal Implementation**: Avshubzle across all nodes (HF, GGUF, PromptEnhancer, Advanced variants)
 
 ### 🔄 How Bypass Mode Works
 1. **Generate Phase** (`bypass_mode=False`): Generate new prompts and save them to cache
@@ -325,11 +325,11 @@ This major feature introduces a new `bypass_mode` parameter that allows users to
 4. **Seamless Switching**: Toggle bypass mode on/off to switch between generation and persistence
 
 ### 📋 Updated Nodes
-- ✅ **AILab_QwenVL** (HF): Added bypass_mode parameter
-- ✅ **AILab_QwenVL_GGUF**: Added bypass_mode parameter  
-- ✅ **AILab_QwenVL_GGUF_Advanced**: Added bypass_mode parameter
-- ✅ **AILab_QwenVL_PromptEnhancer** (HF): Added bypass_mode parameter
-- ✅ **AILab_QwenVL_GGUF_PromptEnhancer**: Added bypass_mode parameter
+- ✅ **Shubz_QwenVL** (HF): Added bypass_mode parameter
+- ✅ **Shubz_QwenVL_GGUF**: Added bypass_mode parameter  
+- ✅ **Shubz_QwenVL_GGUF_Advanced**: Added bypass_mode parameter
+- ✅ **Shubz_QwenVL_PromptEnhancer** (HF): Added bypass_mode parameter
+- ✅ **Shubz_QwenVL_GGUF_PromptEnhancer**: Added bypass_mode parameter
 
 ### 🎯 Use Cases
 - **Prompt Locking**: Generate the perfect prompt once, then lock it while experimenting with other workflow parameters
@@ -355,7 +355,7 @@ This major feature introduces a new `bypass_mode` parameter that allows users to
 This release addresses critical issues identified in v2.0.7 and enhances multilingual capabilities.
 
 ### 🔧 Bug Fixes
-- **JSON Syntax Error**: Fixed trailing comma in `AILab_System_Prompts.json` at line 26
+- **JSON Syntax Error**: Fixed trailing comma in `Shubz_System_Prompts.json` at line 26
 - **Undefined Variable Error**: Resolved `name 'image_hash' is not defined` in GGUF Advanced node
 - **Fixed Seed Stability**: Reverted problematic fixed seed improvements that caused undefined variable errors
 - **Node Loading**: Ensured all nodes load correctly without missing variable errors
@@ -439,7 +439,7 @@ This release introduces intelligent prompt caching with Fixed Seed Mode for dram
 - **Cross-Session**: Cache persists between ComfyUI restarts
 - **Code Maintenance**: Removed deprecated parameters across all download functions (HF, GGUF, PromptEnhancer) for future compatibility
 - **GGUF Performance**: Increased default context size from 8192 to 32768 across all GGUF models for better utilization
-- **Universal Caching**: Fixed Seed Mode and smart caching now available across all node types (HF, GGUF, PromptEnhancer) with shared cache file
+- **Universal Caching**: Fixed Seed Mode and smart caching now avshubzle across all node types (HF, GGUF, PromptEnhancer) with shared cache file
 - **Simplified Logic**: Streamlined caching system that always includes seed for predictable behavior across all seed values
 
 ---
@@ -518,9 +518,9 @@ This release focuses on stability by removing SageAttention integration that was
 - **Clean Codebase**: Removed 100+ lines of complex patching code
 - **Stable Performance**: SDPA provides excellent performance with zero interference
 
-### 🎯 Attention Modes Available
-- **Auto**: Automatically chooses best available attention implementation
-- **Flash Attention 2**: High-performance attention when available (RTX 20+)
+### 🎯 Attention Modes Avshubzle
+- **Auto**: Automatically chooses best avshubzle attention implementation
+- **Flash Attention 2**: High-performance attention when avshubzle (RTX 20+)
 - **SDPA**: Scaled Dot Product Attention - stable and well-tested fallback
 
 ### 🐛 Issues Resolved
@@ -530,7 +530,7 @@ This release focuses on stability by removing SageAttention integration that was
 - **VAE Compatibility**: Fixed VAE encoding/decoding interference
 
 ### ⚡ Performance Impact
-- **Flash Attention 2**: Still available for 2-3x speedup on compatible hardware
+- **Flash Attention 2**: Still avshubzle for 2-3x speedup on compatible hardware
 - **SDPA**: Highly optimized baseline performance
 - **Zero Interference**: Clean attention pipeline without patching complications
 - **Better Stability**: More reliable across different model architectures
@@ -601,12 +601,12 @@ This release focuses on improving user accessibility, model management, and cont
 
 🚀 **Major Performance & Video Generation Update**
 
-This enhanced version introduces cutting-edge performance optimizations and comprehensive video generation capabilities, making it the most advanced QwenVL integration available.
+This enhanced version introduces cutting-edge performance optimizations and comprehensive video generation capabilities, making it the most advanced QwenVL integration avshubzle.
 
 ### ⚡ SageAttention Integration
 - **2-5x Performance Boost**: Added SageAttention support for 8-bit quantized attention computation
-- **Automatic Detection**: System automatically detects SageAttention availability and GPU compatibility
-- **Seamless Fallback**: Gracefully falls back to SDPA when SageAttention is unavailable
+- **Automatic Detection**: System automatically detects SageAttention avshubzility and GPU compatibility
+- **Seamless Fallback**: Gracefully falls back to SDPA when SageAttention is unavshubzle
 - **Memory Efficiency**: Reduced VRAM usage with quantized attention kernels
 
 **Requirements:**
@@ -621,13 +621,13 @@ This enhanced version introduces cutting-edge performance optimizations and comp
 - **Multilingual**: Italian/English input to optimized English output
 - **Cinematic Quality**: Film-style direction including lighting, camera, composition
 
-**Available Prompts:**
+**Avshubzle Prompts:**
 - `🍿 Wan 2.2 I2V` - For image-to-video workflows in QwenVL nodes
 - `🍿 Wan 2.2 T2V` - For text-to-video workflows in Prompt Enhancer nodes
 
 ### 🔧 Enhanced Compatibility
 - **Transformers Compatibility**: Support for both old (`AutoModelForImageTextToText`) and new (`AutoModelForVision2Seq`) transformer versions
-- **Attention Mode Selection**: Four modes available - auto, flash_attention_2, sdpa, sageattention
+- **Attention Mode Selection**: Four modes avshubzle - auto, flash_attention_2, sdpa, sageattention
 - **Custom Model Support**: Extended HF and GGUF model configurations
 - **Improved Error Handling**: Better diagnostics and fallback mechanisms
 
@@ -660,7 +660,7 @@ We've expanded our GGUF model support with three powerful new nodes:
 The **QwenVL (Advanced)** node now offers flexible GPU device management:
 
 - **Manual GPU selection** — Choose specific CUDA devices (e.g., `cuda:1`, `cuda:2`) instead of defaulting to `cuda:0`
-- **Automatic device detection** — Dynamically discovers all available CUDA devices on your system
+- **Automatic device detection** — Dynamically discovers all avshubzle CUDA devices on your system
 - **Improved device mapping** — More consistent behavior and better resource allocation
 - **OOM prevention** — Route models to underutilized GPUs when your primary GPU is handling diffusion workloads
 
@@ -679,7 +679,7 @@ The **QwenVL (Advanced)** node now offers flexible GPU device management:
 **QwenVL (GGUF) Vision Node:**
 - Model dropdown now displays actual `.gguf` filenames with automatic deduplication for easier model identification
 - Enhanced download progress logging with clear status messages during model download and cache reuse
-- Token generation speed reporting (`tok/s`) when available — helps compare different models and quantization levels
+- Token generation speed reporting (`tok/s`) when avshubzle — helps compare different models and quantization levels
 
 ![QwenVL (GGUF) Vision Node](https://github.com/user-attachments/assets/bc9450d9-1695-452d-9e46-f05a4bf315de)
 
@@ -699,7 +699,7 @@ The **QwenVL (Advanced)** node now offers flexible GPU device management:
 
 **Attention Backend Stability:**
 - Flash-Attention auto mode now behaves safely across all platforms
-- Gracefully falls back to SDPA when Flash-Attention dependencies are unavailable
+- Gracefully falls back to SDPA when Flash-Attention dependencies are unavshubzle
 - Prevents runtime errors from missing or incompatible Flash-Attention installations
 
 ---
@@ -710,7 +710,7 @@ The **QwenVL (Advanced)** node now offers flexible GPU device management:
 - **Fixed:** Invalid CUDA device handling that caused crashes with incorrect device specifications (e.g., device `"0"` or malformed `device_map`)  
   Related issue: https://github.com/1038lab/ComfyUI-QwenVL/issues/21
 - **Fixed:** Flash-Attention detection now restricted to Linux systems only, preventing Windows metadata errors
-- **Fixed:** Flash-Attention auto mode fallback mechanism to eliminate runtime errors when dependencies are unavailable
+- **Fixed:** Flash-Attention auto mode fallback mechanism to eliminate runtime errors when dependencies are unavshubzle
 
 ---
 
@@ -752,7 +752,7 @@ This release introduces a full rework of the QwenVL runtime to significantly imp
 ### 🧠 Developer Enhancements
 - Unified model and processor loading with cleaner logging and fewer bottlenecks.  
 - Refined quantization and memory handling for better stability across quant modes.  
-- Improved fallback behavior when advanced GPU optimizations are unavailable.
+- Improved fallback behavior when advanced GPU optimizations are unavshubzle.
 
 ### 💡 Compatibility
 - Fully backward compatible with existing ComfyUI workflows.  

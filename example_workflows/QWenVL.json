@@ -80,7 +80,7 @@
     },
     {
       "id": 17,
-      "type": "AILab_QwenVL",
+      "type": "Shubz_QwenVL",
       "pos": [
         -885,
         70
@@ -120,7 +120,7 @@
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {}
         },
-        "Node name for S&R": "AILab_QwenVL"
+        "Node name for S&R": "Shubz_QwenVL"
       },
       "widgets_values": [
         "Qwen3-VL-2B-Instruct",
@@ -138,7 +138,7 @@
     },
     {
       "id": 7,
-      "type": "AILab_LoadImage",
+      "type": "Shubz_LoadImage",
       "pos": [
         -1200,
         70
@@ -176,7 +176,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "AILab_LoadImage",
+        "Node name for S&R": "Shubz_LoadImage",
         "enableTabs": false,
         "tabWidth": 65,
         "tabXOffset": 10,
@@ -250,7 +250,7 @@
     },
     {
       "id": 18,
-      "type": "AILab_QwenVL_Advanced",
+      "type": "Shubz_QwenVL_Advanced",
       "pos": [
         -610.5085688039786,
         481.1527608367014
@@ -290,7 +290,7 @@
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {}
         },
-        "Node name for S&R": "AILab_QwenVL_Advanced"
+        "Node name for S&R": "Shubz_QwenVL_Advanced"
       },
       "widgets_values": [
         "Qwen3-VL-2B-Instruct",

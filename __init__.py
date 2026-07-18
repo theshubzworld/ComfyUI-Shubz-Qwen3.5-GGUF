@@ -2,9 +2,9 @@
 {
   "name": "Qwen3.5-Uncensored GGUF",
   "description": "GGUF-only build of Qwen3.5-Uncensored for ComfyUI. Uses llama-cpp-python — no transformers dependency.",
-  "author": "Deaquay",
+  "author": "Shubz",
   "version": "1.0.0",
-  "url": "https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF",
+  "url": "https://github.com/theshubzworld/ComfyUI-Shubz-Qwen3.5-GGUF",
   "category": "image"
 }
 """

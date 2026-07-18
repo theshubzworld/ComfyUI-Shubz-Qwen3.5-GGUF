@@ -1,5 +1,5 @@
 # Shared utilities for GGUF nodes
-# Cache functions, hash helpers, and common constants extracted from AILab_QwenVL.py
+# Cache functions, hash helpers, and common constants extracted from Shubz_QwenVL.py
 # so that GGUF-only builds don't need the transformers dependency.
 
 import hashlib
@@ -18,9 +18,9 @@ def load_prompt_cache():
         if CACHE_FILE.exists():
             with open(CACHE_FILE, "r", encoding="utf-8") as f:
                 PROMPT_CACHE = json.load(f)
-                print(f"[QwenVL] Loaded {len(PROMPT_CACHE)} cached prompts")
+                print(f"[Shubz QwenVL] Loaded {len(PROMPT_CACHE)} cached prompts")
     except Exception as e:
-        print(f"[QwenVL] Failed to load prompt cache: {e}")
+        print(f"[Shubz QwenVL] Failed to load prompt cache: {e}")
         PROMPT_CACHE = {}
 
 
@@ -30,7 +30,7 @@ def save_prompt_cache():
         with open(CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(PROMPT_CACHE, f, indent=2)
     except Exception as e:
-        print(f"[QwenVL] Failed to save prompt cache: {e}")
+        print(f"[Shubz QwenVL] Failed to save prompt cache: {e}")
 
 
 def get_cache_key(model_name, preset_prompt, custom_prompt, image_hash=None, video_hash=None, seed=None):
@@ -47,7 +47,7 @@ def get_cache_key(model_name, preset_prompt, custom_prompt, image_hash=None, vid
     return hashlib.md5(key_str.encode()).hexdigest()
 
 
-def get_alternative_cache_key(model_name, preset_prompt, custom_prompt, image_hash=None, video_hash=None, seed=None, module_name="QwenVL"):
+def get_alternative_cache_key(model_name, preset_prompt, custom_prompt, image_hash=None, video_hash=None, seed=None, module_name="Shubz QwenVL"):
     """Generate alternative cache key for fixed seed mode to find random prompts"""
     print(f"[{module_name} DEBUG] Searching through cache for model={model_name}, preset={preset_prompt}")
 

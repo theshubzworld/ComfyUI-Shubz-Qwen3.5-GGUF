@@ -30,10 +30,10 @@ from PIL import Image
 
 # Import cache functions from shared module (no transformers dependency)
 sys.path.append(str(Path(__file__).parent))
-from AILab_shared import PROMPT_CACHE, get_cache_key, get_alternative_cache_key, get_image_hash, get_video_hash, save_prompt_cache
+from Shubz_shared import PROMPT_CACHE, get_cache_key, get_alternative_cache_key, get_image_hash, get_video_hash, save_prompt_cache
 
 import folder_paths
-from AILab_OutputCleaner import OutputCleanConfig, clean_model_output
+from Shubz_OutputCleaner import OutputCleanConfig, clean_model_output
 
 # Simple global variable to store last generated prompt
 LAST_SAVED_PROMPT = None
@@ -98,7 +98,7 @@ def read_gguf_architecture(filepath: Path) -> str | None:
 
 
 NODE_DIR = Path(__file__).parent
-SYSTEM_PROMPTS_PATH = NODE_DIR / "AILab_System_Prompts.json"
+SYSTEM_PROMPTS_PATH = NODE_DIR / "Shubz_System_Prompts.json"
 GGUF_CONFIG_PATH = NODE_DIR / "gguf_models.json"
 
 
@@ -118,7 +118,7 @@ def _load_prompt_config():
     except FileNotFoundError:
         pass
     except Exception as exc:
-        print(f"[QwenVL] System prompts load failed: {exc}")
+        print(f"[Shubz QwenVL] System prompts load failed: {exc}")
 
     return preset_prompts, system_prompts
 
@@ -218,7 +218,7 @@ def _scan_local_gguf_models(base_dir: Path, existing_filenames: set[str]) -> dic
             }
 
     if local_models:
-        print(f"[QwenVL] Discovered {len(local_models)} local GGUF model(s) on disk")
+        print(f"[Shubz QwenVL] Discovered {len(local_models)} local GGUF model(s) on disk")
 
     return local_models
 
@@ -230,7 +230,7 @@ def _load_gguf_vl_catalog():
             with open(GGUF_CONFIG_PATH, "r", encoding="utf-8") as fh:
                 data = json.load(fh) or {}
         except Exception as exc:
-            print(f"[QwenVL] gguf_models.json load failed: {exc}")
+            print(f"[Shubz QwenVL] gguf_models.json load failed: {exc}")
 
     base_dir = data.get("base_dir") or "LLM/GGUF"
 
@@ -356,14 +356,14 @@ def _pick_device(device_choice: str) -> str:
 
 def _download_single_file(repo_ids: list[str], filename: str, target_path: Path):
     if target_path.exists():
-        print(f"[QwenVL] Using cached file: {target_path}")
+        print(f"[Shubz QwenVL] Using cached file: {target_path}")
         return
 
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
     last_exc: Exception | None = None
     for repo_id in repo_ids:
-        print(f"[QwenVL] Downloading {filename} from {repo_id} -> {target_path}")
+        print(f"[Shubz QwenVL] Downloading {filename} from {repo_id} -> {target_path}")
         try:
             downloaded = hf_hub_download(
                 repo_id=repo_id,
@@ -375,16 +375,16 @@ def _download_single_file(repo_ids: list[str], filename: str, target_path: Path)
             if downloaded_path.exists() and downloaded_path.resolve() != target_path.resolve():
                 downloaded_path.replace(target_path)
             if target_path.exists():
-                print(f"[QwenVL] Download complete: {target_path}")
+                print(f"[Shubz QwenVL] Download complete: {target_path}")
             break
         except Exception as exc:
             last_exc = exc
-            print(f"[QwenVL] hf_hub_download failed from {repo_id}: {exc}")
+            print(f"[Shubz QwenVL] hf_hub_download failed from {repo_id}: {exc}")
     else:
-        raise FileNotFoundError(f"[QwenVL] Download failed for {filename}: {last_exc}")
+        raise FileNotFoundError(f"[Shubz QwenVL] Download failed for {filename}: {last_exc}")
 
     if not target_path.exists():
-        raise FileNotFoundError(f"[QwenVL] File not found after download: {target_path}")
+        raise FileNotFoundError(f"[Shubz QwenVL] File not found after download: {target_path}")
 
 
 def _resolve_model_entry(model_name: str) -> GGUFVLResolved:
@@ -408,7 +408,7 @@ def _resolve_model_entry(model_name: str) -> GGUFVLResolved:
     mmproj_filename = entry.get("mmproj_filename")
 
     if not model_filename:
-        raise ValueError(f"[QwenVL] gguf_vl_models.json entry missing 'filename' for: {model_name}")
+        raise ValueError(f"[Shubz QwenVL] gguf_vl_models.json entry missing 'filename' for: {model_name}")
 
     def _int(name: str, default: int) -> int:
         value = entry.get(name, default)
@@ -441,7 +441,7 @@ class QwenVLGGUFBase:
         self.current_signature = None
 
     def clear(self):
-        print(f"[QwenVL GGUF DEBUG] Starting VRAM cleanup...")
+        print(f"[Shubz QwenVL GGUF DEBUG] Starting VRAM cleanup...")
 
         # Force cleanup of chat handler first
         if self.chat_handler is not None:
@@ -452,7 +452,7 @@ class QwenVLGGUFBase:
                 elif hasattr(self.chat_handler, '__del__'):
                     self.chat_handler.__del__()
             except Exception as e:
-                print(f"[QwenVL GGUF DEBUG] Error closing chat_handler: {e}")
+                print(f"[Shubz QwenVL GGUF DEBUG] Error closing chat_handler: {e}")
             finally:
                 self.chat_handler = None
 
@@ -467,7 +467,7 @@ class QwenVLGGUFBase:
                 # Force garbage collection of the model
                 del self.llm
             except Exception as e:
-                print(f"[QwenVL GGUF DEBUG] Error closing LLM: {e}")
+                print(f"[Shubz QwenVL GGUF DEBUG] Error closing LLM: {e}")
             finally:
                 self.llm = None
 
@@ -479,20 +479,20 @@ class QwenVLGGUFBase:
 
         # Force CUDA cache cleanup multiple times
         if torch.cuda.is_available():
-            print(f"[QwenVL GGUF DEBUG] Clearing CUDA cache...")
+            print(f"[Shubz QwenVL GGUF DEBUG] Clearing CUDA cache...")
             torch.cuda.empty_cache()
             torch.cuda.synchronize()
             # Additional cleanup
             torch.cuda.empty_cache()
 
-        print(f"[QwenVL GGUF DEBUG] VRAM cleanup completed")
+        print(f"[Shubz QwenVL GGUF DEBUG] VRAM cleanup completed")
 
     def _load_backend(self):
         try:
             from llama_cpp import Llama  # noqa: F401
         except Exception as exc:
             raise RuntimeError(
-                "[QwenVL] llama_cpp is not available. Install the GGUF vision dependency first. See docs/GGUF_MANUAL_INSTALL.md"
+                "[Shubz QwenVL] llama_cpp is not available. Install the GGUF vision dependency first. See docs/GGUF_MANUAL_INSTALL.md"
             ) from exc
 
     def _load_model(
@@ -515,9 +515,9 @@ class QwenVLGGUFBase:
             model_path = Path(resolved.model_filename)
             mmproj_path = Path(resolved.mmproj_filename) if resolved.mmproj_filename else None
             if not model_path.exists():
-                raise FileNotFoundError(f"[QwenVL] Local GGUF model not found: {model_path}")
+                raise FileNotFoundError(f"[Shubz QwenVL] Local GGUF model not found: {model_path}")
             if mmproj_path is not None and not mmproj_path.exists():
-                raise FileNotFoundError(f"[QwenVL] Local mmproj not found: {mmproj_path}")
+                raise FileNotFoundError(f"[Shubz QwenVL] Local mmproj not found: {mmproj_path}")
         else:
             base_dir = _resolve_base_dir(GGUF_VL_CATALOG.get("base_dir") or "llm/GGUF")
 
@@ -535,12 +535,12 @@ class QwenVLGGUFBase:
 
             if not model_path.exists():
                 if not repo_ids:
-                    raise FileNotFoundError(f"[QwenVL] GGUF model not found locally and no repo_id provided: {model_path}")
+                    raise FileNotFoundError(f"[Shubz QwenVL] GGUF model not found locally and no repo_id provided: {model_path}")
                 _download_single_file(repo_ids, resolved.model_filename, model_path)
 
             if mmproj_path is not None and not mmproj_path.exists():
                 if not repo_ids:
-                    raise FileNotFoundError(f"[QwenVL] mmproj not found locally and no repo_id provided: {mmproj_path}")
+                    raise FileNotFoundError(f"[Shubz QwenVL] mmproj not found locally and no repo_id provided: {mmproj_path}")
                 _download_single_file(repo_ids, resolved.mmproj_filename, mmproj_path)
 
         device_kind = _pick_device(device)
@@ -574,7 +574,7 @@ class QwenVLGGUFBase:
             return
 
         # Force aggressive cleanup before loading new model (especially for same model conflicts)
-        print(f"[QwenVL GGUF DEBUG] Forcing cleanup before model loading...")
+        print(f"[Shubz QwenVL GGUF DEBUG] Forcing cleanup before model loading...")
         self.clear()
 
         # Additional wait for CUDA cleanup
@@ -598,7 +598,7 @@ class QwenVLGGUFBase:
                     handler_cls = Qwen25VLChatHandler
                 except ImportError:
                     raise RuntimeError(
-                        "[QwenVL] Missing Qwen VL chat handler in llama_cpp. Install the correct fork/wheel. See docs/GGUF_MANUAL_INSTALL.md"
+                        "[Shubz QwenVL] Missing Qwen VL chat handler in llama_cpp. Install the correct fork/wheel. See docs/GGUF_MANUAL_INSTALL.md"
                     )
 
             mmproj_kwargs = {
@@ -610,7 +610,7 @@ class QwenVLGGUFBase:
             mmproj_kwargs = _filter_kwargs_for_callable(getattr(handler_cls, "__init__", handler_cls), mmproj_kwargs)
             if "image_max_tokens" not in mmproj_kwargs:
                 print(
-                    "[QwenVL] Warning: installed llama_cpp chat handler does not support image_max_tokens; "
+                    "[Shubz QwenVL] Warning: installed llama_cpp chat handler does not support image_max_tokens; "
                     "image token budget will be controlled by ctx only."
                 )
             self.chat_handler = handler_cls(**mmproj_kwargs)
@@ -631,22 +631,22 @@ class QwenVLGGUFBase:
         is_qwen35 = arch in ("qwen35", "qwen35moe") if arch else "qwen3.5-" in model_name.lower()
         if is_qwen35:
             llm_kwargs["chat_template_kwargs"] = {"enable_thinking": False}
-            print(f"[QwenVL] Qwen3.5 detected (arch={arch}): Disabling thinking in chat template.")
+            print(f"[Shubz QwenVL] Qwen3.5 detected (arch={arch}): Disabling thinking in chat template.")
 
         if has_mmproj and self.chat_handler is not None:
             llm_kwargs["chat_handler"] = self.chat_handler
             llm_kwargs["image_min_tokens"] = 1024
             llm_kwargs["image_max_tokens"] = img_max
 
-        print(f"[QwenVL] Loading GGUF: {model_path.name} (device={device_kind}, gpu_layers={n_gpu_layers}, ctx={n_ctx})")
+        print(f"[Shubz QwenVL] Loading GGUF: {model_path.name} (device={device_kind}, gpu_layers={n_gpu_layers}, ctx={n_ctx})")
         llm_kwargs_filtered = _filter_kwargs_for_callable(getattr(Llama, "__init__", Llama), llm_kwargs)
         if has_mmproj and self.chat_handler is not None and "chat_handler" not in llm_kwargs_filtered:
             print(
-                "[QwenVL] Warning: installed llama_cpp Llama() does not accept chat_handler; images will be ignored. "
+                "[Shubz QwenVL] Warning: installed llama_cpp Llama() does not accept chat_handler; images will be ignored. "
                 "Update llama-cpp-python to a multimodal-capable build."
             )
         if device_kind == "cuda" and n_gpu_layers == 0:
-            print("[QwenVL] Warning: device=cuda selected but n_gpu_layers=0; model will run on CPU.")
+            print("[Shubz QwenVL] Warning: device=cuda selected but n_gpu_layers=0; model will run on CPU.")
 
         self.llm = Llama(**llm_kwargs_filtered)
         self.current_signature = signature
@@ -663,21 +663,19 @@ class QwenVLGGUFBase:
         seed: int,
         model_name: str = "",
     ) -> str:
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+
         if images_b64:
             content = [{"type": "text", "text": user_prompt}]
             for img in images_b64:
                 if not img:
                     continue
                 content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img}"}})
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": content},
-            ]
+            messages.append({"role": "user", "content": content})
         else:
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ]
+            messages.append({"role": "user", "content": user_prompt})
 
         start = time.perf_counter()
         result = self.llm.create_chat_completion(
@@ -698,11 +696,11 @@ class QwenVLGGUFBase:
             tok_s = completion_tokens / elapsed
             if isinstance(prompt_tokens, int) and prompt_tokens >= 0:
                 print(
-                    f"[QwenVL] Tokens: prompt={prompt_tokens}, completion={completion_tokens}, "
+                    f"[Shubz QwenVL] Tokens: prompt={prompt_tokens}, completion={completion_tokens}, "
                     f"time={elapsed:.2f}s, speed={tok_s:.2f} tok/s"
                 )
             else:
-                print(f"[QwenVL] Tokens: completion={completion_tokens}, time={elapsed:.2f}s, speed={tok_s:.2f} tok/s")
+                print(f"[Shubz QwenVL] Tokens: completion={completion_tokens}, time={elapsed:.2f}s, speed={tok_s:.2f} tok/s")
 
         content = (result.get("choices") or [{}])[0].get("message", {}).get("content", "")
         cleaned = clean_model_output(str(content or ""), OutputCleanConfig(mode="text"))
@@ -730,8 +728,9 @@ class QwenVLGGUFBase:
         top_k=None,
         pool_size=None,
         keep_last_prompt=False,
+        custom_system_prompt=None,
     ):
-        print(f"[QwenVL GGUF DEBUG] Starting run with seed={seed}, keep_last_prompt={keep_last_prompt}")
+        print(f"[Shubz QwenVL GGUF DEBUG] Starting run with seed={seed}, keep_last_prompt={keep_last_prompt}")
 
         global LAST_SAVED_PROMPT
 
@@ -748,7 +747,10 @@ class QwenVLGGUFBase:
         # Always generate when keep last prompt is disabled
         print(f"[QwenVL GGUF] Keep last prompt disabled - generating new prompt")
 
-        prompt_template = SYSTEM_PROMPTS.get(preset_prompt, preset_prompt)
+        if preset_prompt == "None":
+            prompt_template = ""
+        else:
+            prompt_template = SYSTEM_PROMPTS.get(preset_prompt, preset_prompt)
 
         # Generate cache key with all inputs including seed
         image_hash = get_image_hash(image)
@@ -763,43 +765,46 @@ class QwenVLGGUFBase:
         #         print(f"[QwenVL GGUF] Using cached prompt for seed {seed}: {cache_key[:8]}...")
         #         return cached_text.strip()
 
-        print(f"[QwenVL GGUF DEBUG] Cache disabled - proceeding with generation")
+        print(f"[Shubz QwenVL GGUF DEBUG] Cache disabled - proceeding with generation")
 
         if custom_prompt and custom_prompt.strip():
-            # Combine user input with template - custom prompt first for priority
-            prompt = f"{custom_prompt.strip()}\n\n{prompt_template}"
+            if prompt_template:
+                # Combine user input with template - custom prompt first for priority
+                prompt = f"{custom_prompt.strip()}\n\n{prompt_template}"
+            else:
+                prompt = custom_prompt.strip()
         else:
             prompt = prompt_template
 
-        print(f"[QwenVL GGUF DEBUG] Final prompt: {prompt[:100]}...")
+        print(f"[Shubz QwenVL GGUF DEBUG] Final prompt: {prompt[:100]}...")
 
         images_b64: list[str] = []
         if image is not None:
-            print(f"[QwenVL GGUF DEBUG] Processing image...")
-            print(f"[QwenVL GGUF DEBUG] Image shape before processing: {image.shape}")
+            print(f"[Shubz QwenVL GGUF DEBUG] Processing image...")
+            print(f"[Shubz QwenVL GGUF DEBUG] Image shape before processing: {image.shape}")
 
             # Handle batch images from T2V
             if len(image.shape) == 4:  # [batch, height, width, channels]
-                print(f"[QwenVL GGUF DEBUG] Detected batch image with shape: {image.shape}")
+                print(f"[Shubz QwenVL GGUF DEBUG] Detected batch image with shape: {image.shape}")
                 # Take first frame from batch or process all frames
                 if image.shape[0] > 1:
-                    print(f"[QwenVL GGUF DEBUG] Processing {image.shape[0]} frames from batch")
+                    print(f"[Shubz QwenVL GGUF DEBUG] Processing {image.shape[0]} frames from batch")
                     for i in range(image.shape[0]):
                         frame_img = image[i]  # Take each frame from batch
-                        print(f"[QwenVL GGUF DEBUG] Processing batch frame {i} with shape: {frame_img.shape}")
+                        print(f"[Shubz QwenVL GGUF DEBUG] Processing batch frame {i} with shape: {frame_img.shape}")
                         img = _tensor_to_base64_png(frame_img)
                         if img:
                             images_b64.append(img)
                 else:
                     # Single frame in batch format
                     frame_img = image[0]
-                    print(f"[QwenVL GGUF DEBUG] Single frame in batch, shape: {frame_img.shape}")
+                    print(f"[Shubz QwenVL GGUF DEBUG] Single frame in batch, shape: {frame_img.shape}")
                     img = _tensor_to_base64_png(frame_img)
                     if img:
                         images_b64.append(img)
             else:
                 # Regular single image [height, width, channels]
-                print(f"[QwenVL GGUF DEBUG] Regular single image, shape: {image.shape}")
+                print(f"[Shubz QwenVL GGUF DEBUG] Regular single image, shape: {image.shape}")
                 img = _tensor_to_base64_png(image)
                 if img:
                     images_b64.append(img)
@@ -809,23 +814,23 @@ class QwenVLGGUFBase:
                 if img:
                     images_b64.append(img)
 
-        print(f"[QwenVL GGUF DEBUG] Images processed: {len(images_b64)} images/videos")
+        print(f"[Shubz QwenVL GGUF DEBUG] Images processed: {len(images_b64)} images/videos")
 
         # Debug video/image info
         if video is not None:
-            print(f"[QwenVL GGUF DEBUG] Video shape: {video.shape}")
-            print(f"[QwenVL GGUF DEBUG] Frame count requested: {frame_count}")
+            print(f"[Shubz QwenVL GGUF DEBUG] Video shape: {video.shape}")
+            print(f"[Shubz QwenVL GGUF DEBUG] Frame count requested: {frame_count}")
         if image is not None:
-            print(f"[QwenVL GGUF DEBUG] Image shape: {image.shape}")
+            print(f"[Shubz QwenVL GGUF DEBUG] Image shape: {image.shape}")
 
         # Debug VRAM before model loading
         if torch.cuda.is_available():
             allocated = torch.cuda.memory_allocated()
             total = torch.cuda.get_device_properties(0).total_memory
-            print(f"[QwenVL GGUF DEBUG] VRAM before loading: {allocated/1024**3:.2f}GB / {total/1024**3:.2f}GB")
+            print(f"[Shubz QwenVL GGUF DEBUG] VRAM before loading: {allocated/1024**3:.2f}GB / {total/1024**3:.2f}GB")
 
         try:
-            print(f"[QwenVL GGUF DEBUG] Loading model...")
+            print(f"[Shubz QwenVL GGUF DEBUG] Loading model...")
             self._load_model(
                 model_name=model_name,
                 device=device,
@@ -836,12 +841,12 @@ class QwenVLGGUFBase:
                 top_k=top_k,
                 pool_size=pool_size,
             )
-            print(f"[QwenVL GGUF DEBUG] Model loaded successfully")
+            print(f"[Shubz QwenVL GGUF DEBUG] Model loaded successfully")
             if images_b64 and self.chat_handler is None:
-                print("[QwenVL] Warning: images provided but this model entry has no mmproj_file; images will be ignored")
-            print(f"[QwenVL GGUF DEBUG] Starting generation...")
+                print("[Shubz QwenVL] Warning: images provided but this model entry has no mmproj_file; images will be ignored")
+            print(f"[Shubz QwenVL GGUF DEBUG] Starting generation...")
             text = self._invoke(
-                system_prompt=(
+                system_prompt=custom_system_prompt if custom_system_prompt else (
                     "You are a helpful vision-language assistant. "
                     "Answer directly with the final answer only. No <think> and no reasoning."
                 ),
@@ -855,8 +860,8 @@ class QwenVLGGUFBase:
                 model_name=model_name,
             )
 
-            print(f"[QwenVL GGUF DEBUG] Generation completed. Text length: {len(text) if text else 0}")
-            print(f"[QwenVL GGUF DEBUG] Generated text: {text[:100] if text else 'EMPTY'}...")
+            print(f"[Shubz QwenVL GGUF DEBUG] Generation completed. Text length: {len(text) if text else 0}")
+            print(f"[Shubz QwenVL GGUF DEBUG] Generated text: {text[:100] if text else 'EMPTY'}...")
 
             # Cache the generated text
             PROMPT_CACHE[cache_key] = {
@@ -872,7 +877,7 @@ class QwenVLGGUFBase:
 
             print(f"[QwenVL GGUF] Cached new prompt for seed {seed}: {cache_key[:8]}...")
 
-            print(f"[QwenVL GGUF DEBUG] Returning tuple with text...")
+            print(f"[Shubz QwenVL GGUF DEBUG] Returning tuple with text...")
 
             # Save the generated prompt for future bypass mode
             LAST_SAVED_PROMPT = text
@@ -884,14 +889,14 @@ class QwenVLGGUFBase:
                 self.clear()
 
 
-class AILab_QwenVL_GGUF(QwenVLGGUFBase):
+class Shubz_QwenVL_GGUF(QwenVLGGUFBase):
     @classmethod
     def INPUT_TYPES(cls):
         all_models = GGUF_VL_CATALOG.get("models") or {}
         model_keys = sorted([key for key, entry in all_models.items() if (entry or {}).get("mmproj_filename")]) or ["(no GGUF VL models found)"]
         default_model = model_keys[0]
 
-        prompts = PRESET_PROMPTS or ["🖼️ Detailed Description"]
+        prompts = ["None"] + (PRESET_PROMPTS or ["🖼️ Detailed Description"])
         preferred_prompt = "🖼️ Detailed Description"
         default_prompt = preferred_prompt if preferred_prompt in prompts else prompts[0]
 
@@ -899,6 +904,11 @@ class AILab_QwenVL_GGUF(QwenVLGGUFBase):
             "required": {
                 "model_name": (model_keys, {"default": default_model}),
                 "preset_prompt": (prompts, {"default": default_prompt}),
+                "custom_system_prompt": ("STRING", {
+                    "default": "You are a helpful vision-language assistant. Answer directly with the final answer only. No <think> and no reasoning.", 
+                    "multiline": True,
+                    "tooltip": "System prompt instructing the model how to behave."
+                }),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True, "tooltip": "Additional user input that gets combined with the preset template. Leave empty to use only the template."}),
                 "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 8192}),
                 "keep_model_loaded": ("BOOLEAN", {"default": True}),
@@ -914,12 +924,13 @@ class AILab_QwenVL_GGUF(QwenVLGGUFBase):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("RESPONSE",)
     FUNCTION = "process"
-    CATEGORY = "Qwen3.5-Uncensored"
+    CATEGORY = "🤖 Shubz Qwen3.5-Uncensored"
 
     def process(
         self,
         model_name,
         preset_prompt,
+        custom_system_prompt,
         custom_prompt,
         max_tokens,
         keep_model_loaded,
@@ -949,17 +960,18 @@ class AILab_QwenVL_GGUF(QwenVLGGUFBase):
             top_k=None,
             pool_size=None,
             keep_last_prompt=keep_last_prompt,
+            custom_system_prompt=custom_system_prompt,
         )
 
 
-class AILab_QwenVL_GGUF_Advanced(QwenVLGGUFBase):
+class Shubz_QwenVL_GGUF_Advanced(QwenVLGGUFBase):
     @classmethod
     def INPUT_TYPES(cls):
         all_models = GGUF_VL_CATALOG.get("models") or {}
         model_keys = sorted([key for key, entry in all_models.items() if (entry or {}).get("mmproj_filename")]) or ["(no GGUF VL models found)"]
         default_model = model_keys[0]
 
-        prompts = PRESET_PROMPTS or ["🖼️ Detailed Description"]
+        prompts = ["None"] + (PRESET_PROMPTS or ["🖼️ Detailed Description"])
         preferred_prompt = "🖼️ Detailed Description"
         default_prompt = preferred_prompt if preferred_prompt in prompts else prompts[0]
 
@@ -972,6 +984,11 @@ class AILab_QwenVL_GGUF_Advanced(QwenVLGGUFBase):
                 "model_name": (model_keys, {"default": default_model}),
                 "device": (device_options, {"default": "auto"}),
                 "preset_prompt": (prompts, {"default": default_prompt}),
+                "custom_system_prompt": ("STRING", {
+                    "default": "You are a helpful vision-language assistant. Answer directly with the final answer only. No <think> and no reasoning.", 
+                    "multiline": True,
+                    "tooltip": "System prompt instructing the model how to behave."
+                }),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True, "tooltip": "Additional user input that gets combined with the preset template. Leave empty to use only the template."}),
                 "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 8192}),
                 "temperature": ("FLOAT", {"default": 0.6, "min": 0.0, "max": 2.0}),
@@ -997,13 +1014,14 @@ class AILab_QwenVL_GGUF_Advanced(QwenVLGGUFBase):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("RESPONSE",)
     FUNCTION = "process"
-    CATEGORY = "Qwen3.5-Uncensored"
+    CATEGORY = "🤖 Shubz Qwen3.5-Uncensored"
 
     def process(
         self,
         model_name,
         device,
         preset_prompt,
+        custom_system_prompt,
         custom_prompt,
         max_tokens,
         temperature,
@@ -1042,16 +1060,17 @@ class AILab_QwenVL_GGUF_Advanced(QwenVLGGUFBase):
             image_max_tokens=image_max_tokens,
             top_k=top_k,
             pool_size=pool_size,
-            keep_last_prompt=keep_last_prompt
+            keep_last_prompt=keep_last_prompt,
+            custom_system_prompt=custom_system_prompt,
         )
 
 
 NODE_CLASS_MAPPINGS = {
-    "AILab_QwenVL_GGUF": AILab_QwenVL_GGUF,
-    "AILab_QwenVL_GGUF_Advanced": AILab_QwenVL_GGUF_Advanced,
+    "Shubz_QwenVL_GGUF": Shubz_QwenVL_GGUF,
+    "Shubz_QwenVL_GGUF_Advanced": Shubz_QwenVL_GGUF_Advanced,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AILab_QwenVL_GGUF": "Qwen3.5-Uncensored (GGUF)",
-    "AILab_QwenVL_GGUF_Advanced": "Qwen3.5-Uncensored Advanced (GGUF)",
+    "Shubz_QwenVL_GGUF": "🤖 Shubz Qwen3.5-Uncensored (GGUF)",
+    "Shubz_QwenVL_GGUF_Advanced": "⚙️ Shubz Qwen3.5-Uncensored Advanced (GGUF)",
 }

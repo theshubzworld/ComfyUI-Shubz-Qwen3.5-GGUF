@@ -1,9 +1,9 @@
 {
-  "author": "Deaquay",
-  "title": "Qwen3.5-Uncensored GGUF",
-  "reference": "https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF",
+  "author": "Shubz",
+  "title": "ComfyUI-Shubz-Qwen3.5-GGUF",
+  "reference": "https://github.com/theshubzworld/ComfyUI-Shubz-Qwen3.5-GGUF",
   "files": [
-    "https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored-GGUF"
+    "https://github.com/theshubzworld/ComfyUI-Shubz-Qwen3.5-GGUF"
   ],
   "install_type": "git-clone",
   "description": "GGUF-only build of Qwen3.5-Uncensored for ComfyUI. Uses llama-cpp-python instead of transformers — no transformers dependency, compatible with older ComfyUI nodes.",

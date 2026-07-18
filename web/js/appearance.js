@@ -9,15 +9,15 @@ const COLOR_THEMES = {
 
 const NODE_COLORS = {
     // QwenVL nodes
-    "AILab_QwenVL": "QwenVL",
-    "AILab_QwenVL_Advanced": "QwenVL",
-    "AILab_QwenVL_PromptEnhancer": "Enhancer",
-    "AILab_QwenVL_GGUF": "QwenVLGGUF",
-    "AILab_QwenVL_GGUF_Advanced": "QwenVLGGUF",
-    "AILab_QwenVL_GGUF_PromptEnhancer": "Enhancer",
+    "Shubz_QwenVL": "QwenVL",
+    "Shubz_QwenVL_Advanced": "QwenVL",
+    "Shubz_QwenVL_PromptEnhancer": "Enhancer",
+    "Shubz_QwenVL_GGUF": "QwenVLGGUF",
+    "Shubz_QwenVL_GGUF_Advanced": "QwenVLGGUF",
+    "Shubz_QwenVL_GGUF_PromptEnhancer": "Enhancer",
 
     // Tools
-    "AILab_QwenVL_PromptLibrary": "Tools",
+    "Shubz_QwenVL_PromptLibrary": "Tools",
 };
 
 function setNodeColors(node, theme) {
