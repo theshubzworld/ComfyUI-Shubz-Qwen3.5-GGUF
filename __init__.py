@@ -1,6 +1,6 @@
 """
 {
-  "name": "Qwen3.5-Uncensored GGUF",
+  "name": "ComfyUI-Shubz-Qwen3.5-GGUF",
   "description": "GGUF-only build of Qwen3.5-Uncensored for ComfyUI. Uses llama-cpp-python — no transformers dependency.",
   "author": "Shubz",
   "version": "1.0.0",
