@@ -1,6 +1,6 @@
-## ComfyUI-Qwen3.5-Uncensored-GGUF
+## ComfyUI-Shubz-Qwen3.5-GGUF
 
-**GGUF-only** build of [ComfyUI-Qwen3.5-Uncensored](https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored). Uses `llama-cpp-python` instead of `transformers` — no transformers dependency, so it won't conflict with older ComfyUI nodes that need transformers <5.
+**GGUF-only** custom branded build of [ComfyUI-Qwen3.5-Uncensored](https://github.com/Deaquay/ComfyUI-Qwen3.5-Uncensored). Uses `llama-cpp-python` instead of `transformers` — no transformers dependency, so it won't conflict with older ComfyUI nodes that need transformers <5.
 
 ### Requirements
 
@@ -20,11 +20,11 @@ If your Python or CUDA version isn't listed above, the required llama-cpp-python
 
 | Node | Description |
 |------|-------------|
-| **Qwen3.5-Uncensored (GGUF)** | Vision-language inference with GGUF models (image + video) |
-| **Qwen3.5-Uncensored Advanced (GGUF)** | Same with full parameter control (ctx, batch, gpu layers, etc.) |
-| **Qwen3.5-Uncensored Prompt Enhancer (GGUF)** | Text-only prompt enhancement/rewriting |
-| **Story Split Node** | Splits WAN 2.2 Story output into 4 separate prompts |
-| **VRAM Cleanup** | VRAM cleanup with multiple modes |
+| **🤖 Shubz Qwen3.5-Uncensored (GGUF)** | Vision-language inference with GGUF models (image + video) |
+| **⚙️ Shubz Qwen3.5-Uncensored Advanced (GGUF)** | Same with full parameter control (ctx, batch, gpu layers, etc.) |
+| **✍️ Shubz Qwen3.5-Uncensored Prompt Enhancer (GGUF)** | Text-only prompt enhancement/rewriting |
+| **📖 Story Split Node** | Splits WAN 2.2 Story output into 4 separate prompts |
+| **🧹 VRAM Cleanup** | VRAM cleanup with multiple modes |
 
 ### Automatic Local Model Discovery
 
